@@ -5,11 +5,14 @@
  
 const unsigned short int MAIN_DELAY = 1000;
 const unsigned short int requiredStep = 2048;
+const int ENABLE_EASY_DRIVER = 0;
+const int STEP_PIN_EASY_DRIVER = 4;
+const int DIR_PIN_EASY_DRIVER = 5;
 const int CE = 6;
 const int CSN = 7;
 int joystickData[3] = {0};
-int leftLimitSwitch = A1;
-int rightLimitSwitch = A2;
+int leftLimitSwitch = 2;
+int rightLimitSwitch = 3;
 int leftEndSwitchState = 0;
 int rightEndSwitchState = 0;
 const int speedSetpoint1 = 1;
@@ -37,12 +40,40 @@ void set_speed()
   }
 }
 
+void moveEasyDriverRight()
+{        
+  digitalWrite(ENABLE_EASY_DRIVER, LOW);
+  digitalWrite(DIR_PIN_EASY_DRIVER, LOW);
+  digitalWrite(STEP_PIN_EASY_DRIVER, HIGH);
+}
+
+void moveEasyDriverLeft()
+{
+  digitalWrite(ENABLE_EASY_DRIVER, LOW);
+  digitalWrite(DIR_PIN_EASY_DRIVER, HIGH);
+  digitalWrite(STEP_PIN_EASY_DRIVER, HIGH);
+}
+
+void stopEasyDriver()
+{
+   digitalWrite(ENABLE_EASY_DRIVER, HIGH);
+   digitalWrite(DIR_PIN_EASY_DRIVER, LOW);
+   digitalWrite(STEP_PIN_EASY_DRIVER, LOW);  
+}
+
 void setup()
 {
+  pinMode(ENABLE_EASY_DRIVER, OUTPUT);
+  digitalWrite(ENABLE_EASY_DRIVER, HIGH);
+  pinMode(STEP_PIN_EASY_DRIVER, OUTPUT);
+  pinMode(DIR_PIN_EASY_DRIVER, OUTPUT);
+  digitalWrite(ENABLE_EASY_DRIVER, HIGH);
   pinMode(leftLimitSwitch, INPUT);
   digitalWrite(leftLimitSwitch, HIGH);
   pinMode(rightLimitSwitch, INPUT);
   digitalWrite(rightLimitSwitch, HIGH);
+  attachInterrupt(digitalPinToInterrupt(leftLimitSwitch), moveEasyDriverRight, LOW);
+  attachInterrupt(digitalPinToInterrupt(rightLimitSwitch), moveEasyDriverLeft, LOW);
   Serial.begin(9600);
   stepper.setSPR(4075.7728395);
   radio.begin();
@@ -111,6 +142,29 @@ void loop()
           stepper.setDirection(STOP);
           stepper.rotate();
         }
+      }
+
+       /*
+        Easy Driver
+        ENABLE_EASY_DRIVER = 2;
+        STEP_PIN_EASY_DRIVER = 3;
+        DIR_PIN_EASY_DRIVER = 4;
+      */
+      
+      if(joystickData[2] > 800)
+      {
+        Serial.println("Rotating Easy Driver ClockWise");
+        moveEasyDriverLeft();
+        
+      } else if(joystickData[2] < 300)
+      {
+        Serial.println("Rotating EasyDriver CounterClockWise");
+        moveEasyDriverRight();
+      }else
+      {
+        Serial.print("No EasyDriver action. Value of Y-position is:");
+        Serial.println(joystickData[2]);
+        stopEasyDriver();
       }
       
   }
