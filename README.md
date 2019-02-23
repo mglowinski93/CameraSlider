@@ -1,7 +1,8 @@
 # CameraSlider
 CameraSlider project for Grzegorz
 
-#Arduino 
+#Arduino
+
 Arduino Nano - transmitter
 
 Arduino Uno - receiver
