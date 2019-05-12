@@ -63,5 +63,4 @@ void loop() {
  
   //I'm not sure if it will work. I've never used that in such a way.
   radio.write(&joystick_position, sizeof(joystick_position));
-  delay(1000);
 }
