@@ -63,6 +63,7 @@ void stopEasyDriver()
 
 void setup()
 {
+  Serial.println("Setting up device");
   pinMode(ENABLE_EASY_DRIVER, OUTPUT);
   digitalWrite(ENABLE_EASY_DRIVER, HIGH);
   pinMode(STEP_PIN_EASY_DRIVER, OUTPUT);
@@ -80,14 +81,17 @@ void setup()
   radio.openReadingPipe(0, address);
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
+  Serial.println("Setup done");
 }
 void loop()
 {
   leftEndSwitchState = digitalRead(leftLimitSwitch);
   rightEndSwitchState = digitalRead(rightLimitSwitch);
+  Serial.println("==============");
+  Serial.print("Left end state switch state: ");
   Serial.println(leftEndSwitchState);
+  Serial.print("Right end state switch state: ");
   Serial.println(rightEndSwitchState);
-  Serial.println("==================");
  
   /*
     Start reading from NRF module
@@ -97,9 +101,7 @@ void loop()
       radio.read(&joystickData, sizeof(joystickData)); //read data
       Serial.println(joystickData[0]); // X-Position
       Serial.println(joystickData[1]); // Y-position
-      Serial.println(joystickData[2]); // SW Button
-      Serial.println("@@@@@@@@@@@@@");
- 
+      Serial.println(joystickData[2]); // SW Button 
       /*
         Set speed dependently on SW button state
       */
@@ -143,7 +145,6 @@ void loop()
           stepper.rotate();
         }
       }
-
        /*
         Easy Driver
         ENABLE_EASY_DRIVER = 2;
@@ -167,9 +168,21 @@ void loop()
         stopEasyDriver();
       }
       
+  } else 
+  {
+    Serial.println("No data received from transmitter");
+    Serial.println("Stopping Easy Driver");
+    stopEasyDriver();
+    Serial.println("Easy Driver Stopped");
+    Serial.println("Stopping 28BYJ-48");
+    stepper.setDirection(STOP);
+    stepper.rotate();  
+    Serial.println("28BYJ-48  stopped");
   }
-   
-  stepper.run();        
+  Serial.println("==============");
+  Serial.println();
+  Serial.println();
+  stepper.run();
   if(MAIN_DELAY !=0)
     {delay(MAIN_DELAY);}
 }
