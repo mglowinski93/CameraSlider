@@ -9,6 +9,7 @@ const int speedChangePin = 6; //Choose Speed Value
 
 void setup()
 {
+  Serial.begin(9600);
   pinMode(smallSteperCWPin, INPUT);
   pinMode(smallSteperCCWPin, INPUT);
   pinMode(easyDriverCWPin, INPUT);
@@ -22,13 +23,19 @@ void loop()
 {
     if(digitalRead(smallSteperCWPin))
     {
+      Serial.println("Starting 28BYJ-48 CW");
       stepper.setDirection(CW);
+      Serial.println("28BYJ-48 started CW");
     }else if (digitalRead(smallSteperCCWPin))
     {
+      Serial.println("Starting 28BYJ-48 CCW");
       stepper.setDirection(CCW);
+      Serial.println("28BYJ-48 started CCW");
     }else
     {
+      Serial.println("Stopping 28BYJ-48");
       stepper.setDirection(STOP);
+      Serial.println("28BYJ-48 stopped");
     }
     stepper.rotate();
     stepper.run();
