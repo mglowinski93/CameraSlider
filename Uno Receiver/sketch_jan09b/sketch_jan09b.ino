@@ -10,7 +10,7 @@ const int smallSteperCW = 8; //28BYJ-48 ClockWise
 const int smallSteperCCW = 9; //28BYJ-48 CounterClockWise
 const int easyDriverCW = 10; //EasyDriver CounterClockWise
 const int easyDriverCCW = 11; //EasyDriver CounterClockWise
-const int speedChange = 12; //Choose Speed Value
+const int speedChangePin = 12; //Choose Speed Value
 
 RF24 radio(CE, CSN); // CE, CSN
 
@@ -23,6 +23,11 @@ void setup()
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
   Serial.println("Setup done");
+  pinMode(smallSteperCW, OUTPUT);
+  pinMode(smallSteperCCW, OUTPUT);
+  pinMode(easyDriverCW, OUTPUT);
+  pinMode(easyDriverCCW, OUTPUT);
+  pinMode(speedChangePinPin, OUTPUT);
 }
 
 void loop()
@@ -43,12 +48,12 @@ void loop()
       */
       if(joystickData[2] == 1 && joystickButtonPressed == 0)
       {
-        digitalWrite(speedChange, HIGH);
+        digitalWrite(speedChangePin, HIGH);
         joystickButtonPressed = 1;
       }
       if(joystickData[2] == 0)
       {
-        digitalWrite(speedChange, LOW);
+        digitalWrite(speedChangePin, LOW);
         joystickButtonPressed = 0;  
       }
 
