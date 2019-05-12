@@ -9,6 +9,11 @@ const int speedChangePin = 6; //Choose Speed Value
 
 void setup()
 {
+  pinMode(smallSteperCWPin, INPUT);
+  pinMode(smallSteperCCWPin, INPUT);
+  pinMode(easyDriverCWPin, INPUT);
+  pinMode(easyDriverCCWPin, INPUT);
+  pinMode(speedChangePin, INPUT);
   stepper.setRPM(12);
   stepper.setSPR(4075.7728395);
 }
