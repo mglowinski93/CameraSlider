@@ -25,6 +25,7 @@ AccelStepper stepper_28BYJ_48(AccelStepper::FULL4WIRE, mtrPin1, mtrPin3, mtrPin2
 void setup()
 {
   radio.begin();
+  radio.setDataRate( RF24_2MBPS );
   radio.openReadingPipe(0, address);
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
@@ -41,13 +42,9 @@ void loop()
     Start reading from NRF module
   */
   if ( radio.available() )
-  {
-      bool done = false;
-      
-      while (radio.available())
-      {
-        radio.read(&joystickData, sizeof(joystickData));
-      }
+  {    
+    
+      radio.read(&joystickData, sizeof(joystickData));
       
       /*
         Set speed dependently on SW button state
