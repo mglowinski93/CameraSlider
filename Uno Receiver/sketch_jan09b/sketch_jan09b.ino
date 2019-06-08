@@ -16,9 +16,10 @@ const byte address[6] = "00001";
 const int MAX_SPEED = 2000;
 const int SPEED_LOW = 1000;
 const int SPEED_FAST = 2000;
+const int ACCELERATION = 900;
 
 RF24 radio(CE, CSN); // CE, CSN
-AccelStepper stepper_28BYJ_48(8, mtrPin1, mtrPin3, mtrPin2, mtrPin4);
+AccelStepper stepper_28BYJ_48(AccelStepper::FULL4WIRE, mtrPin1, mtrPin3, mtrPin2, mtrPin4);
 //AccelStepper stepper_easy_driver(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
 
 void setup()
@@ -28,7 +29,7 @@ void setup()
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
   stepper_28BYJ_48.setMaxSpeed(MAX_SPEED);
-  stepper_28BYJ_48.setAcceleration(500.0);
+  stepper_28BYJ_48.setAcceleration(ACCELERATION);
   stepper_28BYJ_48.setSpeed(SPEED_LOW);
   //stepper_easy_driver.setMaxSpeed(MAX_SPEED);
   //stepper_easy_driver.setSpeed(SPEED_LOW);
