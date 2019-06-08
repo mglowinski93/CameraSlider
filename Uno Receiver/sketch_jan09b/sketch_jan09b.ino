@@ -18,6 +18,10 @@ const int SPEED_LOW = 500;
 const int SPEED_FAST = 1000;
 const int ACCELERATION = 900;
 
+unsigned long actualTime = 0;
+unsigned long storedTime = 0;
+unsigned long radioRefreshValue = 10;
+
 RF24 radio(CE, CSN); // CE, CSN
 AccelStepper stepper_28BYJ_48(AccelStepper::FULL4WIRE, mtrPin1, mtrPin3, mtrPin2, mtrPin4);
 //AccelStepper stepper_easy_driver(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
@@ -43,9 +47,12 @@ void loop()
   */
   if ( radio.available() )
   {    
-    
-      radio.read(&joystickData, sizeof(joystickData));
-      
+      actualTime = millis();
+      if (actualTime - storedTime >= radioRefreshValue)
+      {
+        storedTime = actualTime;
+        radio.read(&joystickData, sizeof(joystickData));
+      }
       /*
         Set speed dependently on SW button state
       */
