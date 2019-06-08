@@ -17,14 +17,18 @@ const int CSN = 7;
 int joystickData[3] = {0, 0, 1};
 bool joystickButtonPressed = 0;
 const byte address[6] = "00001";
-const int MAX_SPEED = 1000;
-const int SPEED_SLOW = 50;
-const int SPEED_FAST = 400;
+const int MAX_SPEED_28BYJ_48 = 1000;
+const int SPEED_SLOW_28BYJ_48 = 50;
+const int SPEED_FAST_28BYJ_48 = 400;
+const int MAX_SPEED_EASY_DRIVER = 3000;
+const int SPEED_SLOW_EASY_DRIVER = 50;
+const int SPEED_FAST_EASY_DRIVER= 3000;
  
 unsigned long actualTime = 0;
 unsigned long storedTime = 0;
 unsigned long radioRefreshValue = 100;
-int currentSpeed = 0;
+int currentSpeed_28BYJ_48 = 0;
+int currentSpeed_EASY_DRIVER = 0;
 bool stepper_28BYJ_48_direction_set = 0;
 bool stepper_easy_driver_direction_set = 0;
  
@@ -37,11 +41,12 @@ void setup()
    radio.openReadingPipe(0, address);
    radio.setPALevel(RF24_PA_MIN);
    radio.startListening();
-   stepper_28BYJ_48.setMaxSpeed(MAX_SPEED);
-   stepper_28BYJ_48.setSpeed(SPEED_FAST);
-   stepper_easy_driver.setMaxSpeed(MAX_SPEED);
-   stepper_easy_driver.setSpeed(SPEED_FAST);
-   currentSpeed = SPEED_FAST;
+   stepper_28BYJ_48.setMaxSpeed(MAX_SPEED_28BYJ_48);
+   stepper_28BYJ_48.setSpeed(SPEED_FAST_28BYJ_48);
+   stepper_easy_driver.setMaxSpeed(MAX_SPEED_EASY_DRIVER);
+   stepper_easy_driver.setSpeed(SPEED_FAST_EASY_DRIVER);
+   currentSpeed_28BYJ_48 = stepper_28BYJ_48.speed();
+   currentSpeed_EASY_DRIVER = stepper_easy_driver.speed();
    pinMode(endSwitchRight, INPUT);
    pinMode(endSwitchLeft, INPUT);
    digitalWrite(endSwitchRight, HIGH);
@@ -61,15 +66,15 @@ void loop()
 
       if(joystickData[2] == 0 && joystickButtonPressed == 0)
       {
-        if( currentSpeed == SPEED_FAST )
+        if( currentSpeed_28BYJ_48 == SPEED_FAST_28BYJ_48 )
         {
-          currentSpeed = SPEED_SLOW;  
+          currentSpeed_28BYJ_48 = SPEED_SLOW_28BYJ_48;
+          currentSpeed_EASY_DRIVER = SPEED_SLOW_EASY_DRIVER;
         }else
         {
-          currentSpeed = SPEED_FAST;  
+          currentSpeed_28BYJ_48 = SPEED_FAST_28BYJ_48;
+          currentSpeed_EASY_DRIVER = SPEED_FAST_EASY_DRIVER; 
         }
-        stepper_28BYJ_48.setSpeed(currentSpeed);
-        //stepper_easy_driver.setSpeed(currentSpeed);
         joystickButtonPressed = 1;
       }
       if(joystickData[2] == 1)
@@ -81,7 +86,7 @@ void loop()
       {
         if( !stepper_28BYJ_48_direction_set )
         {
-          stepper_28BYJ_48.setSpeed(currentSpeed);
+          stepper_28BYJ_48.setSpeed(currentSpeed_28BYJ_48);
           stepper_28BYJ_48_direction_set = true;
         }
         stepper_28BYJ_48.runSpeed();
@@ -91,7 +96,7 @@ void loop()
       {
         if( !stepper_28BYJ_48_direction_set )
         {
-          stepper_28BYJ_48.setSpeed(-currentSpeed);
+          stepper_28BYJ_48.setSpeed(-currentSpeed_28BYJ_48);
           stepper_28BYJ_48_direction_set = true;
         }
         stepper_28BYJ_48.runSpeed();
@@ -106,7 +111,7 @@ void loop()
       {
         if( !stepper_easy_driver_direction_set )
         {
-          stepper_easy_driver.setSpeed(currentSpeed);
+          stepper_easy_driver.setSpeed(currentSpeed_EASY_DRIVER);
           stepper_easy_driver_direction_set = true;
         }
         stepper_easy_driver.runSpeed();
@@ -116,7 +121,7 @@ void loop()
       {
         if( !stepper_easy_driver_direction_set )
         {
-          stepper_easy_driver.setSpeed(-currentSpeed);
+          stepper_easy_driver.setSpeed(-currentSpeed_EASY_DRIVER);
           stepper_easy_driver_direction_set = true;
         }
         stepper_easy_driver.runSpeed();
