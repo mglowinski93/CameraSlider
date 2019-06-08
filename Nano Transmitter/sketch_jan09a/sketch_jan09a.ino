@@ -16,7 +16,6 @@ const int CE = 7; //need for NRF24L01
 const int CSN = 8; //need for NRF24L01
 bool SW; //variable reserved for JoyStick Push State. WILL WE NEED THIS FOR SOMETHING?
 int Xasis=0, Yasis=0; //JoyStick position
-const int DELAY = 200;
  
 /*
 Prepare NRF Object
@@ -27,7 +26,7 @@ const byte address[6] = "00001"; //address (pipe) through which two moduled will
 int joystick_position[3] = {0,0,0}; //array with data to send via NRF24L01
 unsigned long actualTime = 0;
 unsigned long storedTime = 0;
-unsigned long radioRefreshValue = 200;
+unsigned long radioRefreshValue = 0; // with that value steppers works the fastest way
 
 /*
 Read Joystick State
