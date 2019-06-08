@@ -7,6 +7,8 @@
 #define mtrPin2  3     // IN2 on the ULN2003 driver 1
 #define mtrPin3  4     // IN3 on the ULN2003 driver 1
 #define mtrPin4  5     // IN4 on the ULN2003 driver 1
+#define easyDriverStep 9
+#define easyDriverDir 8
  
 const int CE = 6;
 const int CSN = 7;
@@ -22,10 +24,11 @@ unsigned long storedTime = 0;
 unsigned long radioRefreshValue = 100;
 int currentSpeed = 0;
 bool stepper_28BYJ_48_direction_set = 0;
+bool stepper_easy_driver_direction_set = 0;
  
 RF24 radio(CE, CSN); // CE, CSN
 AccelStepper stepper_28BYJ_48(AccelStepper::FULL4WIRE, mtrPin1, mtrPin3, mtrPin2, mtrPin4);
-
+AccelStepper stepper_easy_driver(AccelStepper::DRIVER, easyDriverStep, easyDriverDir);
 void setup()
 {  
    radio.begin();
@@ -34,6 +37,8 @@ void setup()
    radio.startListening();
    stepper_28BYJ_48.setMaxSpeed(MAX_SPEED);
    stepper_28BYJ_48.setSpeed(SPEED_FAST);
+   stepper_easy_driver.setMaxSpeed(MAX_SPEED);
+   stepper_easy_driver.setSpeed(SPEED_FAST);
    currentSpeed = SPEED_FAST;  
 }
 
@@ -89,6 +94,31 @@ void loop()
       if( joystickData[1] >= 300 && joystickData[1] <= 800 && stepper_28BYJ_48_direction_set )
       {
         stepper_28BYJ_48_direction_set = false;
+      }
+
+      if(joystickData[0] > 800)
+      {
+        if( !stepper_easy_driver_direction_set )
+        {
+          stepper_easy_driver.setSpeed(currentSpeed);
+          stepper_easy_driver_direction_set = true;
+        }
+        stepper_easy_driver.runSpeed();
+      }
+
+      if(joystickData[0] < 300)
+      {
+        if( !stepper_easy_driver_direction_set )
+        {
+          stepper_easy_driver.setSpeed(-currentSpeed);
+          stepper_easy_driver_direction_set = true;
+        }
+        stepper_easy_driver.runSpeed();
+      }
+
+      if( joystickData[0] >= 300 && joystickData[0] <= 800 && stepper_easy_driver_direction_set )
+      {
+       stepper_easy_driver_direction_set = false;
       }
     }
 }
