@@ -13,9 +13,9 @@ const int CSN = 7;
 int joystickData[3] = {0};
 bool joystickButtonPressed = 0;
 const byte address[6] = "00001";
-const int MAX_SPEED = 2000;
-const int SPEED_LOW = 1000;
-const int SPEED_FAST = 2000;
+const int MAX_SPEED = 1000;
+const int SPEED_LOW = 500;
+const int SPEED_FAST = 1000;
 const int ACCELERATION = 900;
 
 RF24 radio(CE, CSN); // CE, CSN
