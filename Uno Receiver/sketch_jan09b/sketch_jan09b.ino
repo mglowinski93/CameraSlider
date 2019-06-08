@@ -1,82 +1,80 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <AccelStepper.h>
+
+#define mtrPin1  2     // IN1 on the ULN2003 driver 1
+#define mtrPin2  3     // IN2 on the ULN2003 driver 1
+#define mtrPin3  4     // IN3 on the ULN2003 driver 1
+#define mtrPin4  5     // IN4 on the ULN2003 driver 1
+
 const int CE = 6;
 const int CSN = 7;
 int joystickData[3] = {0};
 bool joystickButtonPressed = 0;
 const byte address[6] = "00001";
-const int smallSteperCW = 8; //28BYJ-48 ClockWise
-const int smallSteperCCW = 9; //28BYJ-48 CounterClockWise
-const int easyDriverCW = 10; //EasyDriver CounterClockWise
-const int easyDriverCCW = 11; //EasyDriver CounterClockWise
-const int speedChangePin = 12; //Choose Speed Value
+const int MAX_SPEED = 2000;
+const int SPEED_LOW = 1000;
+const int SPEED_FAST = 2000;
 
 RF24 radio(CE, CSN); // CE, CSN
+AccelStepper stepper_28BYJ_48(8, mtrPin1, mtrPin3, mtrPin2, mtrPin4);
+//AccelStepper stepper_easy_driver(AccelStepper::FULL4WIRE, 6, 7, 8, 9);
 
 void setup()
 {
-  Serial.begin(9600);
-  Serial.println("Setting up radio module");
   radio.begin();
   radio.openReadingPipe(0, address);
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
-  Serial.println("Setup done");
-  pinMode(smallSteperCW, OUTPUT);
-  pinMode(smallSteperCCW, OUTPUT);
-  pinMode(easyDriverCW, OUTPUT);
-  pinMode(easyDriverCCW, OUTPUT);
-  pinMode(speedChangePinPin, OUTPUT);
+  stepper_28BYJ_48.setMaxSpeed(MAX_SPEED);
+  stepper_28BYJ_48.setAcceleration(500.0);
+  stepper_28BYJ_48.setSpeed(SPEED_LOW);
+  //stepper_easy_driver.setMaxSpeed(MAX_SPEED);
+  //stepper_easy_driver.setSpeed(SPEED_LOW);
 }
 
 void loop()
 {
-  Serial.println("=============="); 
+  //Serial.println("=============="); 
   /*
     Start reading from NRF module
   */
   if ( radio.available() )
   {
-      radio.read(&joystickData, sizeof(joystickData)); //read data
-      Serial.println(joystickData[0]); // X-Position
-      Serial.println(joystickData[1]); // Y-position
-      Serial.println(joystickData[2]); // SW Button 
+      bool done = false;
+      
+      while (radio.available())
+      {
+        radio.read(&joystickData, sizeof(joystickData));
+      }
       
       /*
         Set speed dependently on SW button state
       */
       if(joystickData[2] == 1 && joystickButtonPressed == 0)
       {
-        digitalWrite(speedChangePin, HIGH);
+        stepper_28BYJ_48.setSpeed(SPEED_FAST);
+        //stepper_easy_driver.setSpeed(SPEED_FAST);
         joystickButtonPressed = 1;
       }
       if(joystickData[2] == 0)
       {
-        digitalWrite(speedChangePin, LOW);
         joystickButtonPressed = 0;  
       }
 
- 
       /*
         Move 28BYJ-48
       */
       if(joystickData[1] > 800)
       {
-        Serial.println("Rotating 28BYJ-48 ClockWise");
-        digitalWrite(smallSteperCW, HIGH);
-        digitalWrite(smallSteperCCW, LOW);
+        stepper_28BYJ_48.runSpeed();
       } else if(joystickData[1] < 300)
       {
-        Serial.println("Rotating 28BYJ-48 CounterClockWise");
-        digitalWrite(smallSteperCW, LOW);
-        digitalWrite(smallSteperCCW, HIGH);
+        stepper_28BYJ_48.runSpeed();
       }else
       {
-        Serial.print("No 28BYJ-48 action. Value of Y-position is:");
-        Serial.println(joystickData[1]);
-        digitalWrite(smallSteperCW, LOW);
-        digitalWrite(smallSteperCCW, LOW);
+        stepper_28BYJ_48.stop();
       }
 
        /*
@@ -84,35 +82,18 @@ void loop()
       */
       if(joystickData[0] > 800)
       {
-        Serial.println("Rotating EasyDriver ClockWise");
-        digitalWrite(easyDriverCW, HIGH);
-        digitalWrite(easyDriverCCW, LOW);
+        //stepper_easy_driver.runSpeed();
       } else if(joystickData[0] < 300)
       {
-        Serial.println("Rotating EasyDriver CounterClockWise");
-        digitalWrite(easyDriverCW, LOW);
-        digitalWrite(easyDriverCCW, HIGH);
+        //stepper_easy_driver.runSpeed();
       }else
       {
-        Serial.print("No EasyDriver action. Value of Y-position is:");
-        Serial.println(joystickData[0]);
-        digitalWrite(easyDriverCW, LOW);
-        digitalWrite(easyDriverCCW, LOW);
+        //stepper_easy_driver.stop();
       }
   
   } else 
   {
-    Serial.println("No data received from transmitter");
-    Serial.println("Stopping Easy Driver");
-    digitalWrite(easyDriverCW, LOW);
-    digitalWrite(easyDriverCCW, LOW);
-    Serial.println("Easy Driver Stopped");
-    Serial.println("Stopping 28BYJ-48");
-    digitalWrite(smallSteperCW, LOW);
-    digitalWrite(smallSteperCCW, LOW);
-    Serial.println("28BYJ-48  stopped");
+    //stepper_easy_driver.stop();
+    stepper_28BYJ_48.stop();
   }
-  Serial.println("==============");
-  Serial.println();
-  Serial.println();
 }
