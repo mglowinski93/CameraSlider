@@ -27,7 +27,7 @@ void setup()
   radio.begin();
   radio.setDataRate( RF24_2MBPS );
   radio.openReadingPipe(0, address);
-  radio.setPALevel(RF24_PA_MIN);
+  radio.setPALevel(RF24_PA_HIGH);
   radio.startListening();
   stepper_28BYJ_48.setMaxSpeed(MAX_SPEED);
   stepper_28BYJ_48.setAcceleration(ACCELERATION);
