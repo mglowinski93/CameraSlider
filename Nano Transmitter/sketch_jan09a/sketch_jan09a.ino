@@ -16,7 +16,7 @@ const int CE = 7; //need for NRF24L01
 const int CSN = 8; //need for NRF24L01
 bool SW; //variable reserved for JoyStick Push State. WILL WE NEED THIS FOR SOMETHING?
 int Xasis=0, Yasis=0; //JoyStick position
-const int DELAY = 0;
+const int DELAY = 200;
  
 /*
 Prepare NRF Object
@@ -25,7 +25,10 @@ More about NRF24L01: https://howtomechatronics.com/tutorials/arduino/arduino-wir
 RF24 radio(CE, CSN); // CE, CSN you can define as you wish:)
 const byte address[6] = "00001"; //address (pipe) through which two moduled will communicate. There is possibility to choose 5  letter string. This enables the choose to which receiver we will talk. It has to be the same on transmitter and receiver.  
 int joystick_position[3] = {0,0,0}; //array with data to send via NRF24L01
- 
+unsigned long actualTime = 0;
+unsigned long storedTime = 0;
+unsigned long radioRefreshValue = 200;
+
 /*
 Read Joystick State
 */
@@ -63,10 +66,14 @@ void loop() {
   Serial.println("===============");
  
   //I'm not sure if it will work. I've never used that in such a way.
-  radio.write(&joystick_position, sizeof(joystick_position));
-
-  if(DELAY != 0)
+  if(radioRefreshValue != 0)
   {
-    delay(DELAY);  
+    actualTime = millis();
+    if (actualTime - storedTime >= radioRefreshValue)
+    {
+       storedTime = actualTime;
+       radio.write(&joystick_position, sizeof(joystick_position));
+    }
   }
+
 }
