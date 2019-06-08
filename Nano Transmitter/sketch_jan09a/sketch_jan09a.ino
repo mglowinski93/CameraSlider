@@ -65,15 +65,11 @@ void loop() {
   Serial.println(joystick_position[2]);
   Serial.println("===============");
  
-  //I'm not sure if it will work. I've never used that in such a way.
-  if(radioRefreshValue != 0)
-  {
-    actualTime = millis();
-    if (actualTime - storedTime >= radioRefreshValue)
-    {
-       storedTime = actualTime;
-       radio.write(&joystick_position, sizeof(joystick_position));
-    }
-  }
 
+  actualTime = millis();
+  if (actualTime - storedTime >= radioRefreshValue)
+  {
+    storedTime = actualTime;
+    radio.write(&joystick_position, sizeof(joystick_position));
+  }
 }
