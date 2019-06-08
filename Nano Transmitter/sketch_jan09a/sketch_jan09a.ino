@@ -43,9 +43,8 @@ void setup() {
   pinMode(SW_pin, INPUT);
   digitalWrite(SW_pin, HIGH);
   radio.begin();
-  radio.setDataRate( RF24_2MBPS );
   radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_HIGH);//This function set the Power Amplifier Level, depends on distance between modules. It distance will be more than 1m, value needs to be changed
+  radio.setPALevel(RF24_PA_MIN);//This function set the Power Amplifier Level, depends on distance between modules. It distance will be more than 1m, value needs to be changed
   radio.stopListening(); //This function set module as Transmitter
   Serial.println("Setup done");
 }

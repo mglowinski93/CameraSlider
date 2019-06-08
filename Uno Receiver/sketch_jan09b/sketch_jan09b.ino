@@ -16,7 +16,6 @@ const byte address[6] = "00001";
 const int MAX_SPEED = 1000;
 const int SPEED_LOW = 500;
 const int SPEED_FAST = 1000;
-const int ACCELERATION = 900;
 
 unsigned long actualTime = 0;
 unsigned long storedTime = 0;
@@ -29,12 +28,10 @@ AccelStepper stepper_28BYJ_48(AccelStepper::FULL4WIRE, mtrPin1, mtrPin3, mtrPin2
 void setup()
 {
   radio.begin();
-  radio.setDataRate( RF24_2MBPS );
   radio.openReadingPipe(0, address);
-  radio.setPALevel(RF24_PA_HIGH);
+  radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
   stepper_28BYJ_48.setMaxSpeed(MAX_SPEED);
-  stepper_28BYJ_48.setAcceleration(ACCELERATION);
   stepper_28BYJ_48.setSpeed(SPEED_LOW);
   //stepper_easy_driver.setMaxSpeed(MAX_SPEED);
   //stepper_easy_driver.setSpeed(SPEED_LOW);
