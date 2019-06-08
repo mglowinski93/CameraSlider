@@ -37,7 +37,6 @@ void setup()
 
 void loop()
 {
-  //Serial.println("=============="); 
   /*
     Start reading from NRF module
   */

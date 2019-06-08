@@ -16,7 +16,7 @@ const int CE = 7; //need for NRF24L01
 const int CSN = 8; //need for NRF24L01
 bool SW; //variable reserved for JoyStick Push State. WILL WE NEED THIS FOR SOMETHING?
 int Xasis=0, Yasis=0; //JoyStick position
-const int DELAY = 200;
+const int DELAY = 10;
  
 /*
 Prepare NRF Object
