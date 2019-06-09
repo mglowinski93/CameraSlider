@@ -14,7 +14,7 @@
  
 const int CE = 6;
 const int CSN = 7;
-int joystickData[3] = {0, 0, 1};
+int joystickData[3] = {500, 500, 1};
 bool joystickButtonPressed = 0;
 const byte address[6] = "00001";
 const int MAX_SPEED_28BYJ_48 = 1000;
